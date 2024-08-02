@@ -1,5 +1,5 @@
 # Use the official Golang image as the base image
-FROM golang:1.20-alpine
+FROM golang:1.22
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -13,8 +13,8 @@ RUN go mod download
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
-# Copy vendor directory
-COPY vendor ./vendor
+# Ensure dependencies are vendored
+RUN go mod vendor
 
 # Build the Go app
 RUN go build -o main .
