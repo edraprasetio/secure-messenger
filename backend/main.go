@@ -8,21 +8,12 @@ import (
 	// "time"
 
 	"github.com/edraprasetio/secure-messenger/database"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	// "go.mongodb.org/mongo-driver/mongo"
 	// "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // var client *mongo.Client
-
-var jwtKey = []byte("my_secret_key")
-
-// Define a structure for the claims
-type Claims struct {
-    Username string `json:"username"`
-    jwt.RegisteredClaims
-}
 
 func main() {
     mongoURI := "mongodb://mongo:27017"
