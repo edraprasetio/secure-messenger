@@ -1,3 +1,5 @@
+# github.com/golang-jwt/jwt/v5 v5.2.1
+## explicit; go 1.18
 # github.com/golang/snappy v0.0.4
 ## explicit
 github.com/golang/snappy
@@ -26,7 +28,7 @@ github.com/xdg-go/scram
 ## explicit; go 1.11
 github.com/xdg-go/stringprep
 # github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76
-## explicit; go 1.20
+## explicit; go 1.22
 github.com/youmark/pkcs8
 # go.mongodb.org/mongo-driver v1.16.0
 ## explicit; go 1.18

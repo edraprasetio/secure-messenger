@@ -21,14 +21,7 @@ func main() {
     router := mux.NewRouter()
     router.HandleFunc("/", HomeHandler).Methods("GET")
     router.HandleFunc("/api/status", StatusHandler).Methods("GET")
-    // router.HandleFunc("/api/test-mongo", TestMongoHandler).Methods("GET")
 
-    // Initialize MongoDB connection
-    // var err erro
-    // client, err = ConnectMongoDB()
-    // if err != nil {
-    //     log.Fatalf("Failed to connect to MongoDB: %v", err)
-    // }
 
     http.ListenAndServe(":8080", router)
 }
