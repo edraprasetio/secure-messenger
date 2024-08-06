@@ -8,6 +8,7 @@ import (
 	// "time"
 
 	"github.com/edraprasetio/secure-messenger/database"
+	"github.com/edraprasetio/secure-messenger/handlers"
 	"github.com/gorilla/mux"
 	// "go.mongodb.org/mongo-driver/mongo"
 	// "go.mongodb.org/mongo-driver/mongo/options"
@@ -16,14 +17,15 @@ import (
 // var client *mongo.Client
 
 func main() {
-    mongoURI := "mongodb://mongo:27017"
-    database.ConnectMongoDB(mongoURI)
-    router := mux.NewRouter()
-    router.HandleFunc("/", HomeHandler).Methods("GET")
-    router.HandleFunc("/api/status", StatusHandler).Methods("GET")
+	mongoURI := "mongodb://mongo:27017"
+	database.ConnectMongoDB(mongoURI)
+	router := mux.NewRouter()
+	router.HandleFunc("/", HomeHandler).Methods("GET")
+	router.HandleFunc("/api/status", StatusHandler).Methods("GET")
+	router.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
+	router.HandleFunc("/protected", handlers.ProtectedHandler).Methods("GET")
 
-
-    http.ListenAndServe(":8080", router)
+	http.ListenAndServe(":8080", router)
 }
 
 // func connectMongoDB() (*mongo.Client, error) {
@@ -48,11 +50,11 @@ func main() {
 // }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hello, World!")
+	fmt.Fprintf(w, "Hello, World!")
 }
 
 func StatusHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Status: OK")
+	fmt.Fprintf(w, "Status: OK")
 }
 
 // func TestMongoHandler(w http.ResponseWriter, r *http.Request) {
