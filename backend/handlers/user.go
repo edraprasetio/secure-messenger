@@ -8,12 +8,26 @@ import (
 	"github.com/edraprasetio/secure-messenger/utils"
 )
 
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func Register(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var req RegisterRequest
+
+	json.NewDecoder(r.Body).Decode(&req)
+	fmt.Fprint(w, req)
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var u User
@@ -34,25 +48,4 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, "Invalid credentials")
 	}
-}
-
-func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	tokenString := r.Header.Get("Authorization")
-	if tokenString == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Missing authorization header")
-		return
-	}
-	tokenString = tokenString[len("Bearer "):]
-
-	err := utils.VerifyToken(tokenString)
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Invalid token")
-		return
-	}
-
-	fmt.Fprint(w, "Welcome to the the protected area")
-
 }
