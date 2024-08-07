@@ -35,8 +35,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
-
-	fmt.Fprint(w, hashedPassword)
 	
 	user := models.User{
 		Username: req.Username,
