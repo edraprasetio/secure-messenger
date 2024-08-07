@@ -1,11 +1,16 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/edraprasetio/secure-messenger/database"
+	"github.com/edraprasetio/secure-messenger/models"
 	"github.com/edraprasetio/secure-messenger/utils"
+	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterRequest struct {
@@ -24,7 +29,28 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 
 	json.NewDecoder(r.Body).Decode(&req)
-	fmt.Fprint(w, req)
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+	fmt.Fprint(w, hashedPassword)
+	
+	user := models.User{
+		Username: req.Username,
+		Password: string(hashedPassword),
+	}
+
+	collection := database.GetCollection("secure_messenger", "users")
+	_, err = collection.InsertOne(context.TODO(), user)
+    if err != nil {
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+	w.WriteHeader(http.StatusCreated)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -33,19 +59,22 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var u User
 
 	json.NewDecoder(r.Body).Decode(&u)
-	fmt.Printf("The user request value %v", u)
 
-	if u.Username == "Chek" && u.Password == "123456" {
-		tokenString, err := utils.GenerateToken(u.Username)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Errorf("No username found")
-		}
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, tokenString)
-		return
-	} else {
-		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Invalid credentials")
-	}
+	collection := database.GetCollection("secure_messenger", "users")
+	var user models.User
+    err := collection.FindOne(context.TODO(), bson.M{"username": u.Username}).Decode(&user)
+    if err != nil {
+        http.Error(w, "No username found", http.StatusUnauthorized)
+        return
+    }
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(u.Password))
+    if err != nil {
+        http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+        return
+    }
+
+	tokenString, err := utils.GenerateToken(u.Username)
+	fmt.Fprint(w, tokenString)
+	
 }
