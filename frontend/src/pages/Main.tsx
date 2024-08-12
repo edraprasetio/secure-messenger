@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Home } from './Home'
 import { Practice } from './Practice'
+import { SignUp } from './SignUp'
 
 const Main = () => (
     <Routes>
@@ -16,7 +17,7 @@ const Main = () => (
             path='/'
             element={
                 <>
-                    <Practice />
+                    <SignUp />
                 </>
             }
         ></Route>
