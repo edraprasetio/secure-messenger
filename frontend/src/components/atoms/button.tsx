@@ -1,29 +1,57 @@
 import styled from '@emotion/styled'
 
-export const BigBlackButton = styled.button`
-    width: 498px;
-    padding: 12px 24px;
-    border: 2px;
-    background-color: #000000;
+const BaseButton = styled.button`
+    padding: 0px 24px;
     border-radius: 8px;
-    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: #ffffff;
     line-height: 29.26px;
-    letter-spacing: 10%;
+    transition: border-color 0.3s ease;
+`
+
+export const ClearButton = styled(BaseButton)`
+    border: 2px solid rgba(0, 0, 0, 0);
+    background-color: transparent;
+    color: ${(props) => props.theme.primaryColor.black[1]};
     &:hover {
-        background-color: #374092;
+        border-color: ${(props) => props.theme.primaryColor.black[1]};
+    }
+    &:active {
+        color: ${(props) => props.theme.primaryColor.white[1]};
+        background-color: ${(props) => props.theme.primaryColor.black[1]};
     }
 `
 
-export const MediumBlackButton = styled(BigBlackButton)`
-    width: unset;
-    height: 36px;
-    padding: 0px 24px;
-    border-radius: 16px;
-    font-family: Monsterrat-Medium;
-    font-size: 18px;
-    color: #ffffff;
+export const BlueButton = styled(BaseButton)`
+    width: 240px;
+    padding: 4px 24px;
+    border: 2px solid ${(props) => props.theme.primaryColor.blue[1]};
+    background-color: ${(props) => props.theme.primaryColor.blue[1]};
+    color: ${(props) => props.theme.primaryColor.white[1]};
+    &:hover {
+        background-color: ${(props) => props.theme.primaryColor.blue[2]};
+        border: 2px solid ${(props) => props.theme.primaryColor.blue[2]};
+    }
+    &:active {
+        background-color: ${(props) => props.theme.primaryColor.white[1]};
+        border: 2px solid ${(props) => props.theme.primaryColor.blue[1]};
+        color: ${(props) => props.theme.primaryColor.blue[1]};
+    }
+`
+
+export const WhiteButton = styled(BaseButton)`
+    width: 240px;
+    padding: 4px 24px;
+    border: 2px solid ${(props) => props.theme.primaryColor.white[1]};
+    background-color: ${(props) => props.theme.primaryColor.white[1]};
+    color: ${(props) => props.theme.primaryColor.black[1]};
+    &:hover {
+        background-color: ${(props) => props.theme.primaryColor.white[3]};
+        border: 2px solid ${(props) => props.theme.primaryColor.white[3]};
+    }
+    &:active {
+        background-color: ${(props) => props.theme.primaryColor.black[1]};
+        border: 2px solid ${(props) => props.theme.primaryColor.white[1]};
+        color: ${(props) => props.theme.primaryColor.white[1]};
+    }
 `
