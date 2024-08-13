@@ -16,7 +16,6 @@ const Input = styled.input`
 export const SignIn = () => {
     const [username, setUsername] = useState<string>('')
     const [password, setPassword] = useState<string>('')
-    const [error, setError] = useState<string | null>(null)
     const [errorMessage, setErrorMessage] = useState('')
 
     const login = async (e: SyntheticEvent) => {
@@ -50,7 +49,8 @@ export const SignIn = () => {
                 }
                 localStorage.setItem('jwt', data.token)
                 localStorage.setItem('username', String(username))
-                console.log(localStorage)
+                console.log(localStorage.getItem('jwt'))
+                console.log(localStorage.getItem('username'))
             })
             .catch((error) => {
                 console.log(error)
@@ -61,14 +61,6 @@ export const SignIn = () => {
                 }
             })
     }
-
-    // const handleSubmit = (e: React.FormEvent) => {
-    //     e.preventDefault()
-
-    //     setError(null)
-    //     console.log('Form Submitted:', { username, password })
-    //     // Here you can add your logic to send data to your backend
-    // }
 
     return (
         <div>

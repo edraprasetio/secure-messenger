@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
 import { BlueButton } from '../components/atoms/button'
 import { HomeBackground } from '../components/home/background'
 import { H1 } from '../styles/typography'
@@ -18,26 +18,40 @@ export const SignUp = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [confirmPassword, setConfirmPassword] = useState<string>('')
-    const [error, setError] = useState<string | null>(null)
+    const [errorMessage, setErrorMessage] = useState('')
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const register = async (e: SyntheticEvent) => {
+        setErrorMessage('')
         e.preventDefault()
 
-        if (password !== confirmPassword) {
-            setError('Passwords do not match')
-            return
-        }
+        const url = 'http://localhost:8080' + '/register'
 
-        setError(null)
-        console.log('Form Submitted:', { email, password })
-        // Here you can add your logic to send data to your backend
+        await fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                password: password,
+            }),
+        }).then((response) => {
+            console.log(response)
+            if (response.ok) {
+                return response.json()
+            } else {
+                throw new Error('Invalid username or password')
+            }
+        })
     }
 
     return (
         <div>
             <HomeBackground>
                 <H1>Sign Up to the Secure Messenger</H1>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={register}>
                     <Input type='username' placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} required />
                     <Input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} required />
                     <Input type='password' placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} required />
