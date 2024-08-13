@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/edraprasetio/secure-messenger/database"
@@ -73,6 +72,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
     }
 
 	tokenString, err := utils.GenerateToken(u.Username)
-	fmt.Fprint(w, tokenString)
+	// fmt.Fprint(w, tokenString)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"token": tokenString,
+	})
 	
 }
