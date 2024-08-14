@@ -3,6 +3,7 @@ import { BlueButton } from '../components/atoms/button'
 import { HomeBackground } from '../components/home/background'
 import { H1 } from '../styles/typography'
 import styled from '@emotion/styled'
+import { SimpleLink } from '../components/atoms/navLink'
 
 const Input = styled.input`
     width: 100%;
@@ -13,11 +14,36 @@ const Input = styled.input`
     font-size: 16px;
 `
 
+const PopupContainer = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const PopupContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+`
+
 export const SignUp = () => {
     const [username, setUsername] = useState<string>('')
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [confirmPassword, setConfirmPassword] = useState<string>('')
+    const [isAccountCreated, setIsAccountCreated] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
     const register = async (e: SyntheticEvent) => {
@@ -40,6 +66,8 @@ export const SignUp = () => {
         }).then((response) => {
             console.log(response)
             if (response.ok) {
+                setIsAccountCreated(true)
+                console.log('account created')
                 return response.json()
             } else {
                 throw new Error('Invalid username or password')
@@ -60,6 +88,16 @@ export const SignUp = () => {
                         <H1>Sign Up</H1>
                     </BlueButton>
                 </form>
+                {isAccountCreated && (
+                    <PopupContainer>
+                        <PopupContent>
+                            Test{' '}
+                            <SimpleLink to={'/login'}>
+                                <BlueButton>Proceed to Login</BlueButton>
+                            </SimpleLink>
+                        </PopupContent>
+                    </PopupContainer>
+                )}
             </HomeBackground>
         </div>
     )

@@ -9,6 +9,7 @@ import (
 	"github.com/edraprasetio/secure-messenger/models"
 	"github.com/edraprasetio/secure-messenger/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -27,8 +28,27 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var req RegisterRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
 
 	json.NewDecoder(r.Body).Decode(&req)
+
+	collection := database.GetCollection("secure_messenger", "users")
+
+	var existingUser models.User
+	err = collection.FindOne(context.TODO(), bson.M{"username": req.Username}).Decode(&existingUser)
+	if err == nil {
+		// User already exists
+		http.Error(w, "Username already exists", http.StatusConflict)
+		return
+	} else if err != mongo.ErrNoDocuments {
+		// Some other error occurred during the search
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -42,7 +62,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		Password: string(hashedPassword),
 	}
 
-	collection := database.GetCollection("secure_messenger", "users")
 	_, err = collection.InsertOne(context.TODO(), user)
     if err != nil {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -50,6 +69,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
     }
 
 	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"message": "Account successfully created"}`))
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
