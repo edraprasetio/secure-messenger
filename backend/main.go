@@ -25,6 +25,12 @@ func main() {
 	router.HandleFunc("/register", handlers.Register).Methods("POST", "OPTIONS")
 	router.HandleFunc("/protected", middlewares.ProtectedHandler).Methods("GET")
 
+
+	// Message Routes (protected by JWT middleware)
+    router.Handle("/messages", middlewares.AuthMiddleware(http.HandlerFunc(handlers.CreateMessage))).Methods("POST")
+    router.Handle("/messages", middlewares.AuthMiddleware(http.HandlerFunc(handlers.GetMessages))).Methods("GET")
+
+
 	log.Println("Starting server on :8080...")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
