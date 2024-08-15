@@ -29,6 +29,8 @@ func main() {
 	// Message Routes (protected by JWT middleware)
     router.Handle("/messages", middlewares.AuthMiddleware(http.HandlerFunc(handlers.CreateMessage))).Methods("POST")
     router.Handle("/messages", middlewares.AuthMiddleware(http.HandlerFunc(handlers.GetMessages))).Methods("GET")
+	router.Handle("/messages", middlewares.AuthMiddleware(http.HandlerFunc(handlers.UpdateMessage))).Methods("PUT")
+    router.Handle("/messages", middlewares.AuthMiddleware(http.HandlerFunc(handlers.DeleteMessage))).Methods("DELETE")
 
 
 	log.Println("Starting server on :8080...")

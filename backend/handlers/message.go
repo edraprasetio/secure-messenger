@@ -42,34 +42,63 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(messages)
 }
 
+type UpdateMessageRequest struct {
+    ID      string `json:"id"`
+    Content string `json:"content"`
+}
+
 func UpdateMessage(w http.ResponseWriter, r *http.Request) {
-    var message models.Message
-    json.NewDecoder(r.Body).Decode(&message)
+    var req UpdateMessageRequest
+    json.NewDecoder(r.Body).Decode(&req)
+
+    objectId, err := primitive.ObjectIDFromHex(req.ID)
+    if err != nil {
+        http.Error(w, "Invalid ID format", http.StatusBadRequest)
+        return
+    }
 
     collection := database.GetCollection("messaging_app", "messages")
-    _, err := collection.UpdateOne(
-        context.TODO(),
-        bson.M{"_id": message.ID},
-        bson.D{{"$set", bson.D{{"content", message.Content}}}},
-    )
-    if err != nil {
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    filter := bson.M{"_id": objectId}
+
+    update := bson.M{
+        "$set": bson.M{
+            "content": req.Content,
+        },
+    }
+
+    result, err := collection.UpdateOne(context.TODO(), filter, update)
+    if err != nil || result.MatchedCount == 0 {
+        http.Error(w, "Message not found or update failed", http.StatusInternalServerError)
         return
     }
 
     w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(bson.M{"message": "Message updated successfully"})
+}
+
+type DeleteMessageRequest struct {
+    ID string `json:"id"`
 }
 
 func DeleteMessage(w http.ResponseWriter, r *http.Request) {
-    id := r.URL.Query().Get("id")
-    objID, _ := primitive.ObjectIDFromHex(id)
+    var req DeleteMessageRequest
+    json.NewDecoder(r.Body).Decode(&req)
+
+    objectId, err := primitive.ObjectIDFromHex(req.ID)
+    if err != nil {
+        http.Error(w, "Invalid ID format", http.StatusBadRequest)
+        return
+    }
 
     collection := database.GetCollection("messaging_app", "messages")
-    _, err := collection.DeleteOne(context.TODO(), bson.M{"_id": objID})
-    if err != nil {
-        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    filter := bson.M{"_id": objectId}
+
+    result, err := collection.DeleteOne(context.TODO(), filter)
+    if err != nil || result.DeletedCount == 0 {
+        http.Error(w, "Message not found or delete failed", http.StatusInternalServerError)
         return
     }
 
     w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(bson.M{"message": "Message deleted successfully"})
 }
