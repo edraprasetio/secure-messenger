@@ -139,3 +139,27 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
     // Return the users slice as a JSON response
     json.NewEncoder(w).Encode(users)
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+    // Parse the request body to get the username
+    var req models.User
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, "Invalid request payload", http.StatusBadRequest)
+        return
+    }
+
+    // Set up the MongoDB collection and filter by username
+    collection := database.GetCollection("secure_messenger", "users")
+    filter := bson.M{"username": req.Username}
+
+    // Delete the user account from the database
+    result, err := collection.DeleteOne(context.TODO(), filter)
+    if err != nil || result.DeletedCount == 0 {
+        http.Error(w, "User not found or delete failed", http.StatusInternalServerError)
+        return
+    }
+
+    // Return a success response
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(bson.M{"message": "Account deleted successfully"})
+}

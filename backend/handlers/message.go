@@ -42,13 +42,9 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(messages)
 }
 
-type UpdateMessageRequest struct {
-    ID      string `json:"id"`
-    Content string `json:"content"`
-}
 
 func UpdateMessage(w http.ResponseWriter, r *http.Request) {
-    var req UpdateMessageRequest
+    var req models.Message
     json.NewDecoder(r.Body).Decode(&req)
 
     objectId, err := primitive.ObjectIDFromHex(req.ID)
@@ -76,12 +72,8 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(bson.M{"message": "Message updated successfully"})
 }
 
-type DeleteMessageRequest struct {
-    ID string `json:"id"`
-}
-
 func DeleteMessage(w http.ResponseWriter, r *http.Request) {
-    var req DeleteMessageRequest
+    var req models.Message
     json.NewDecoder(r.Body).Decode(&req)
 
     objectId, err := primitive.ObjectIDFromHex(req.ID)
