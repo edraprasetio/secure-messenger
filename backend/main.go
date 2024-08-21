@@ -24,6 +24,7 @@ func main() {
 	router.HandleFunc("/login", handlers.Login).Methods("POST", "OPTIONS")
 	router.HandleFunc("/register", handlers.Register).Methods("POST", "OPTIONS")
 	router.HandleFunc("/protected", middlewares.ProtectedHandler).Methods("GET")
+	router.HandleFunc("/users", handlers.GetAllUsers).Methods("GET")
 
 
 	// Message Routes (protected by JWT middleware)
