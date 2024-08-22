@@ -140,6 +140,47 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(users)
 }
 
+func UpdateUsername(w http.ResponseWriter, r *http.Request) {
+    var req struct {
+        CurrentUsername string `json:"current_username"`
+        NewUsername     string `json:"new_username"`
+    }
+
+    // Parse the request body to get the current and new usernames
+    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+        http.Error(w, "Invalid request payload", http.StatusBadRequest)
+        return
+    }
+
+    // Set up the MongoDB collection and filter by the current username
+    collection := database.GetCollection("secure_messenger", "users")
+    filter := bson.M{"username": req.CurrentUsername}
+
+    // Set up the update operation to change the username
+    update := bson.M{
+        "$set": bson.M{
+            "username": req.NewUsername,
+        },
+    }
+
+    // Perform the update operation
+    result, err := collection.UpdateOne(context.TODO(), filter, update)
+    if err != nil {
+        http.Error(w, "Error updating username", http.StatusInternalServerError)
+        return
+    }
+
+    // Check if the username was found and updated
+    if result.MatchedCount == 0 {
+        http.Error(w, "Username not found", http.StatusNotFound)
+        return
+    }
+
+    // Return a success response
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(bson.M{"message": "Username updated successfully"})
+}
+
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
     // Parse the request body to get the username
     var req models.User

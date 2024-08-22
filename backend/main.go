@@ -25,6 +25,7 @@ func main() {
 	router.HandleFunc("/register", handlers.Register).Methods("POST", "OPTIONS")
 	router.HandleFunc("/protected", middlewares.ProtectedHandler).Methods("GET")
 	router.HandleFunc("/users", handlers.GetAllUsers).Methods("GET")
+	router.HandleFunc("/user", handlers.UpdateUsername).Methods("PUT")
 	router.HandleFunc("/user", handlers.DeleteUser).Methods("DELETE")
 
 

@@ -37,3 +37,22 @@ func VerifyToken(tokenString string) error {
 	}
 	return nil
 }
+
+func GetUsernameFromToken(tokenString string) (string, error) {
+    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+        return jwtKey, nil
+    })
+
+    if err != nil {
+        return "", fmt.Errorf("error parsing token: %v", err)
+    }
+
+    if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+        if username, ok := claims["username"].(string); ok {
+            return username, nil
+        }
+        return "", fmt.Errorf("username not found in token")
+    }
+
+    return "", fmt.Errorf("invalid token")
+}
